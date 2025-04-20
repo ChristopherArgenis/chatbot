@@ -4,21 +4,23 @@ from openai import OpenAI
 # Show title and description.
 st.title("💬 Chatbot")
 st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+    "This is a simple chatbot that uses Gemini's 2.0-flash model to generate responses. "
+    "To use this app, you need to provide an Gemini API key."
 )
 
 # Ask user for their OpenAI API key via `st.text_input`.
 # Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
 # via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
+gemini_api_key = st.text_input("Gemini API Key", type="password")
+if not gemini_api_key:
+    st.info("Please add your Gemini API key to continue.", icon="🗝️")
 else:
 
     # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
+    client = OpenAI(
+        api_key=gemini_api_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    )
 
     # Create a session state variable to store the chat messages. This ensures that the
     # messages persist across reruns.
@@ -41,7 +43,8 @@ else:
 
         # Generate a response using the OpenAI API.
         stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gemini-2.0-flash",
+            n=1,
             messages=[
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
